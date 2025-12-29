@@ -37,8 +37,14 @@ class MovieAdminController extends Controller
         ]);
 
         if ($request->hasFile('poster_image')) {
-            $path = $request->file('poster_image')->store('posters', 'public');
-            $validated['poster_path'] = 'storage/'.$path;
+            $file = $request->file('poster_image');
+            $filename = uniqid('poster_', true).'.'.$file->getClientOriginalExtension();
+            $destination = $this->posterDestination();
+            if (! is_dir($destination)) {
+                mkdir($destination, 0755, true);
+            }
+            $file->move($destination, $filename);
+            $validated['poster_path'] = 'storage/posters/'.$filename;
         }
 
         $movie = Movie::create($validated);
@@ -74,8 +80,14 @@ class MovieAdminController extends Controller
         ]);
 
         if ($request->hasFile('poster_image')) {
-            $path = $request->file('poster_image')->store('posters', 'public');
-            $validated['poster_path'] = 'storage/'.$path;
+            $file = $request->file('poster_image');
+            $filename = uniqid('poster_', true).'.'.$file->getClientOriginalExtension();
+            $destination = $this->posterDestination();
+            if (! is_dir($destination)) {
+                mkdir($destination, 0755, true);
+            }
+            $file->move($destination, $filename);
+            $validated['poster_path'] = 'storage/posters/'.$filename;
         }
 
         $movie->update($validated);
@@ -102,5 +114,16 @@ class MovieAdminController extends Controller
         ]);
 
         return redirect()->route('admin.movies.index')->with('status', 'Movie deleted.');
+    }
+
+    private function posterDestination(): string
+    {
+        $publicStorage = base_path('../storage/posters');
+
+        if (app()->environment('production') && is_dir(base_path('../storage'))) {
+            return $publicStorage;
+        }
+
+        return public_path('storage/posters');
     }
 }
