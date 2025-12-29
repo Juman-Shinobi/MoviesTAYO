@@ -1,6 +1,16 @@
 <x-admin-layout :title="'Manage Movies'">
-    <div class="mb-6">
+    <div class="mb-6 flex flex-wrap items-center gap-4">
         <a href="{{ route('admin.movies.create') }}" class="rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-black">Add Movie</a>
+        <form method="GET" class="flex items-center gap-2">
+            <select name="status" class="rounded-full bg-white/90 px-4 py-2 text-sm text-slate-900">
+                <option value="">All Status</option>
+                <option value="now_showing" @selected($status->toString() === 'now_showing')>Now Showing</option>
+                <option value="coming_soon" @selected($status->toString() === 'coming_soon')>Coming Soon</option>
+            </select>
+            <button class="rounded-full border border-white/30 px-4 py-2 text-xs font-semibold text-white/80 hover:text-white">
+                Filter
+            </button>
+        </form>
     </div>
 
     <div class="overflow-hidden rounded-2xl bg-black/60 shadow-glow">

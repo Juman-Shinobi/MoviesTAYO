@@ -9,12 +9,20 @@ use Illuminate\Http\Request;
 
 class MovieAdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $movies = Movie::orderBy('release_date', 'desc')->get();
+        $status = $request->string('status')->trim();
+
+        $movies = Movie::query()
+            ->when($status->isNotEmpty(), function ($query) use ($status) {
+                $query->where('status', $status->toString());
+            })
+            ->orderBy('release_date', 'desc')
+            ->get();
 
         return view('admin.movies.index', [
             'movies' => $movies,
+            'status' => $status,
         ]);
     }
 
